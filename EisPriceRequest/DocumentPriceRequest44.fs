@@ -25,4 +25,6 @@ type DocumentPriceRequest44() =
             __.WorkerMysql()
             
       
-      member __.WorkerMysql() = ()
+      member __.WorkerMysql() =
+          printfn "%O" __.item
+          ()

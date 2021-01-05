@@ -4,6 +4,7 @@ open Microsoft.EntityFrameworkCore
 open System
 open System.ComponentModel.DataAnnotations.Schema
 open System.ComponentModel.DataAnnotations
+open Microsoft.Extensions.Logging
 
 type ArchivePriceRequest44() =
     [<Key>]
@@ -15,7 +16,7 @@ type ArchivePriceRequest44() =
     member val public Archive = "" with get, set
 
     [<property: Column("archive_size")>]
-    member val public SizeArch = 0L with get, set
+    member val public SizeArch = 0 with get, set
 
 type ArchivePriceRequest44Context() =
     inherit DbContext()
@@ -27,6 +28,7 @@ type ArchivePriceRequest44Context() =
         and set v = x.archives <- v
 
     override __.OnConfiguring(optbuilder : DbContextOptionsBuilder) =
+        //optbuilder.UseLoggerFactory(LoggerFactory.Create(fun builder -> builder.AddConsole() |> ignore)) |> ignore
         optbuilder.UseMySQL(S.Settings.ConS) |> ignore
         ()
 

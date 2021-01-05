@@ -19,7 +19,7 @@ type AbstractParserFtpEis() =
         regions
 
     member __.GetListArrays(pathParse : string, s : S.FtpUser) =
-        let mutable arch = List<string * uint64>()
+        let mutable arch = List<string * int>()
         let mutable count = 1
         let mutable wh = true
         while wh do
@@ -27,7 +27,7 @@ type AbstractParserFtpEis() =
                 let ftp = new FtpClient("ftp.zakupki.gov.ru", s.User, s.Pass)
                 ftp.SetWorkingDirectory(pathParse)
                 let ltmp = ftp.GetListing()
-                ltmp |> Seq.iter (fun x -> arch.Add(x.Name, (uint64) x.Size))
+                ltmp |> Seq.iter (fun x -> arch.Add(x.Name, (int) x.Size))
                 wh <- false
                 if count > 1 then Logging.Log.logger (sprintf "Удалось получить список архивов после попытки %d" count)
                 ftp.Disconnect()
