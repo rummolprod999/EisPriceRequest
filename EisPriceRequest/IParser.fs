@@ -1,2 +1,4 @@
-module EisPriceRequest.IParser
+namespace ParserFsharp
 
+type Iparser =
+    abstract member Parsing: unit -> unit

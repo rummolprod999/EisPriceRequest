@@ -9,7 +9,7 @@ open System.Xml
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
 
-type ParserPcontr223(dir : string) =
+type ParserPriceRequest44(dir : string) =
       inherit AbstractParserFtpEis()
       interface Iparser with
 

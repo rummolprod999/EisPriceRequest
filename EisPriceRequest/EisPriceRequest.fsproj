@@ -6,7 +6,27 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Program.fs"/>
+        <Compile Include="IParser.fs" />
+        <Compile Include="Argument.fs" />
+        <Compile Include="ModuleEnvVariable.fs" />
+        <Compile Include="RegionContext.fs" />
+        <Compile Include="AbstractDocumentFtpEis.fs" />
+        <Compile Include="Logger.fs" />
+        <Compile Include="AbstractParserFtpEis.fs" />
+        <Compile Include="ParserPriceRequest44.fs" />
+        <Compile Include="AllParsers.fs" />
+        <Compile Include="Executor.fs" />
+        <Compile Include="EnvSetter.fs" />
+        <Compile Include="Program.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentFTP" Version="33.0.3" />
+      <PackageReference Include="FSharp.Data" Version="3.3.3" />
+      <PackageReference Include="MySql.Data" Version="8.0.22" />
+      <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.22" />
+      <PackageReference Include="MySql.Data.EntityFrameworkCore.Design" Version="8.0.19" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     </ItemGroup>
 
 </Project>
