@@ -10,6 +10,7 @@
         <Compile Include="Argument.fs" />
         <Compile Include="ModuleEnvVariable.fs" />
         <Compile Include="RegionContext.fs" />
+        <Compile Include="ArchivePriceRequest44Context.fs" />
         <Compile Include="AbstractDocumentFtpEis.fs" />
         <Compile Include="Logger.fs" />
         <Compile Include="AbstractParserFtpEis.fs" />
