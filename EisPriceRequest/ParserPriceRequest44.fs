@@ -125,7 +125,19 @@ type ParserPriceRequest44(dir : string) =
                    __.ParsingXml(str, reg, f)
             ()
       
-      member private __.ParsingXml(s : string, reg : Region, f : FileInfo) = ()
+      member private __.ParsingXml(s : string, reg : Region, f : FileInfo) =
+            let doc = XmlDocument()
+            doc.LoadXml(s)
+            let json = JsonConvert.SerializeXmlNode(doc)
+            let j = JObject.Parse(json)
+            match j.SelectToken("$..fcsRequestForQuotation") with
+            | null -> Logging.Log.logger (sprintf "fcsRequestForQuotation tag was not found in %s" f.FullName)
+            | x -> __.Worker(DocumentPriceRequest44(f, x, reg))
+            ()
+      member private __.Worker(d : IDocument) =
+            try
+                  d.Worker()
+            with ex -> Logging.Log.logger ex
       
       member private __.GetArrLastFromFtp(pathParse : string, region : string) =
             let arch = __.GetListArrays(pathParse, S.F44)

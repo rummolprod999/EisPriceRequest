@@ -6,14 +6,19 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="DocumentBuilder.fs" />
         <Compile Include="IParser.fs" />
+        <Compile Include="IDocument.fs" />
         <Compile Include="Argument.fs" />
+        <Compile Include="ModuleNewtonExtensions.fs" />
+        <Compile Include="ModuleStringExtensions.fs" />
         <Compile Include="ModuleEnvVariable.fs" />
         <Compile Include="RegionContext.fs" />
         <Compile Include="ArchivePriceRequest44Context.fs" />
         <Compile Include="AbstractDocumentFtpEis.fs" />
         <Compile Include="Logger.fs" />
         <Compile Include="AbstractParserFtpEis.fs" />
+        <Compile Include="DocumentPriceRequest44.fs" />
         <Compile Include="ParserPriceRequest44.fs" />
         <Compile Include="AllParsers.fs" />
         <Compile Include="Executor.fs" />
