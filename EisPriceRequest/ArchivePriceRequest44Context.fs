@@ -4,7 +4,6 @@ open Microsoft.EntityFrameworkCore
 open System
 open System.ComponentModel.DataAnnotations.Schema
 open System.ComponentModel.DataAnnotations
-open Microsoft.Extensions.Logging
 
 type ArchivePriceRequest44() =
     [<Key>]

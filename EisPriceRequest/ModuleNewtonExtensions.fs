@@ -1,9 +1,7 @@
 namespace ParserFsharp
 open System
-open System.Globalization
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
-open System.Text.RegularExpressions
 open System.Collections.Generic
 open StringExt
 

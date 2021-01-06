@@ -3,9 +3,7 @@ open System
 open System.IO
 open Newtonsoft.Json.Linq
 open NewtonExt
-open Microsoft.EntityFrameworkCore
-open System.Linq
-open System.Collections.Generic
+open StringExt
 open MySql.Data.MySqlClient
 open System.Data
 
@@ -93,9 +91,100 @@ type DocumentPriceRequest44() =
               let contactEMail  = GetStringFromJtoken __.item "responsibleInfo.contactEMail"
               let contactPhone = GetStringFromJtoken __.item "responsibleInfo.contactPhone"
               let addInfo = GetStringFromJtoken __.item "conditions.addInfo"
+              let xml = __.GetXml(__.file.FullName)
+              let idPriceRequest = ref 0
               let insertPriceRequest =
-                String.Format ("INSERT INTO {0}request_for_prices SET eis_id = @eis_id, docPublishDate = @docPublishDate, request_startDate = @request_startDate, request_endDate = @request_endDate, purchase_startDate = @purchase_startDate, purchase_endDate = @purchase_endDate, registryNum = @registryNum, versionNumber = versionNumber, eis_state = @eis_state, pubOrg_regNum = @pubOrg_regNum, pubOrg_consRegistryNum = @pubOrg_consRegistryNum, pubOrg_respRole = @pubOrg_respRole, href = @href, printForm_url = @printForm_url, requestObjectInfo = @requestObjectInfo, responsibleInfo_place = @responsibleInfo_place, contactPerson_FIO = @contactPerson_FIO, contactEMail = @contactEMail, contactPhone = @contactPhone, addInfo = @addInfo, cancel = @cancel", S.Settings.Pref)
+                String.Format ("INSERT INTO {0}request_for_prices SET eis_id = @eis_id, docPublishDate = @docPublishDate, request_startDate = @request_startDate, request_endDate = @request_endDate, purchase_startDate = @purchase_startDate, purchase_endDate = @purchase_endDate, registryNum = @registryNum, versionNumber = versionNumber, eis_state = @eis_state, pubOrg_regNum = @pubOrg_regNum, pubOrg_consRegistryNum = @pubOrg_consRegistryNum, pubOrg_respRole = @pubOrg_respRole, href = @href, printForm_url = @printForm_url, requestObjectInfo = @requestObjectInfo, responsibleInfo_place = @responsibleInfo_place, contactPerson_FIO = @contactPerson_FIO, contactEMail = @contactEMail, contactPhone = @contactPhone, addInfo = @addInfo, cancel = @cancel, xml = @xml", S.Settings.Pref)
               let cmdInsertPR = new MySqlCommand(insertPriceRequest, con)
               cmdInsertPR.Prepare()
-              ()
+              cmdInsertPR.Parameters.AddWithValue("@eis_id", eis_id) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@docPublishDate", docPublishDate) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@request_startDate", request_startDate) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@request_endDate", request_endDate) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@purchase_startDate", purchase_startDate) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@purchase_endDate", purchase_endDate) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@registryNum", registryNum) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@versionNumber", versionNumber) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@eis_state", eis_state) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@pubOrg_regNum", pubOrg_regNum) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@pubOrg_consRegistryNum", pubOrg_consRegistryNum) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@pubOrg_respRole", pubOrg_respRole) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@href", href) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@printForm_url", printForm_url) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@requestObjectInfo", requestObjectInfo) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@responsibleInfo_place", responsibleInfo_place) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@contactPerson_FIO", contactPerson_FIO) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@contactEMail", contactEMail) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@contactPhone", contactPhone) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@addInfo", addInfo) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@cancel", cancel) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@xml", xml) |> ignore
+              cmdInsertPR.ExecuteNonQuery() |> ignore
+              idPriceRequest := int cmdInsertPR.LastInsertedId
+              match updated with
+              | true -> AbstractDocumentFtpEis.Upd <- AbstractDocumentFtpEis.Upd + 1
+              | false -> AbstractDocumentFtpEis.Add <- AbstractDocumentFtpEis.Add + 1
+              let products = __.item.GetElements("products.product")
+              for product in products do
+                  let objectInfo = GetStringFromJtoken __.item "products.objectInfo"
+                  let product_OKPD2_code = GetStringFromJtoken product "OKPD2.code"
+                  let product_OKPD2_name = GetStringFromJtoken product "OKPD2.name"
+                  let product_name = GetStringFromJtoken product "name"
+                  let product_OKEI_code =  GetStringFromJtoken product "OKEI.code"
+                  let product_OKEI_name =  GetStringFromJtoken product "OKEI.name"
+                  let product_quantity = GetStringFromJtoken product "quantity"
+                  let product_quantity = match Decimal.TryParse(product_quantity.GetPriceFromString()) with
+                                          | (true, y) -> y
+                                          | _ -> 0m
+                  let products_identity = GetStringFromJtoken product "identity"
+                  let insertProduct =
+                    String.Format ("INSERT INTO {0}request_for_prices_objects SET rfp_id = @rfp_id, objectInfo = @objectInfo, product_OKPD2_code = @product_OKPD2_code, product_OKPD2_name = @product_OKPD2_name, product_name = @product_name, product_OKEI_code = @product_OKEI_code, product_OKEI_name = @product_OKEI_name, product_quantity = @product_quantity, products_identity = @products_identity", S.Settings.Pref)
+                  let cmdInsertProduct = new MySqlCommand(insertProduct, con)
+                  cmdInsertProduct.Prepare()
+                  cmdInsertProduct.Parameters.AddWithValue("@rfp_id", !idPriceRequest) |> ignore
+                  cmdInsertProduct.Parameters.AddWithValue("@objectInfo", objectInfo) |> ignore
+                  cmdInsertProduct.Parameters.AddWithValue("@product_OKPD2_code", product_OKPD2_code) |> ignore
+                  cmdInsertProduct.Parameters.AddWithValue("@product_OKPD2_name", product_OKPD2_name) |> ignore
+                  cmdInsertProduct.Parameters.AddWithValue("@product_name", product_name) |> ignore
+                  cmdInsertProduct.Parameters.AddWithValue("@product_OKEI_code", product_OKEI_code) |> ignore
+                  cmdInsertProduct.Parameters.AddWithValue("@product_OKEI_name", product_OKEI_name) |> ignore
+                  cmdInsertProduct.Parameters.AddWithValue("@product_quantity", product_quantity) |> ignore
+                  cmdInsertProduct.Parameters.AddWithValue("@products_identity", products_identity) |> ignore
+                  cmdInsertProduct.ExecuteNonQuery() |> ignore
+                  ()
+              let attachments = __.item.GetElements("attachments.attachment")
+              for attachment in attachments do
+                  let fileName = GetStringFromJtoken attachment "fileName"
+                  let fileSize  = GetStringFromJtoken attachment "fileSize"
+                  let docDescription = GetStringFromJtoken attachment "docDescription"
+                  let hrefAtt  = GetStringFromJtoken attachment "url"
+                  let insertAttachment =
+                    String.Format ("INSERT INTO {0}request_for_prices_attachments SET rfp_id = @rfp_id, fileName = @fileName, fileSize = @fileSize, docDescription = @docDescription, href = @href", S.Settings.Pref)
+                  let cmdInsertAttachment = new MySqlCommand(insertAttachment, con)
+                  cmdInsertAttachment.Prepare()
+                  cmdInsertAttachment.Parameters.AddWithValue("@rfp_id", !idPriceRequest) |> ignore
+                  cmdInsertAttachment.Parameters.AddWithValue("@fileName", fileName) |> ignore
+                  cmdInsertAttachment.Parameters.AddWithValue("@fileSize", fileSize) |> ignore
+                  cmdInsertAttachment.Parameters.AddWithValue("@docDescription", docDescription) |> ignore
+                  cmdInsertAttachment.Parameters.AddWithValue("@hrefAtt", hrefAtt) |> ignore
+                  cmdInsertAttachment.ExecuteNonQuery() |> ignore
+                  ()
+              let eis_conditions_payment  = GetStringFromJtoken __.item "conditions.payment"
+              let eis_conditions_main  = GetStringFromJtoken __.item "conditions.main"
+              let eis_conditions_contractGuarantee  = GetStringFromJtoken __.item "conditions.contractGuarantee"
+              let eis_conditions_warranty  = GetStringFromJtoken __.item "conditions.warranty"
+              let eis_conditions_delivery  = GetStringFromJtoken __.item "conditions.delivery"
+              let eis_conditions_addInfo  = GetStringFromJtoken __.item "conditions.addInfo"
+              let insertConditions =
+                    String.Format ("INSERT INTO {0}request_for_prices_conditions SET rfp_id = @rfp_id, eis_conditions_payment = @eis_conditions_payment, eis_conditions_main = @eis_conditions_main, eis_conditions_contractGuarantee = @eis_conditions_contractGuarantee, eis_conditions_warranty = @eis_conditions_warranty, eis_conditions_delivery = @eis_conditions_delivery, eis_conditions_addInfo = @eis_conditions_addInfo", S.Settings.Pref)
+              let cmdInsertConditions = new MySqlCommand(insertConditions, con)
+              cmdInsertConditions.Prepare()
+              cmdInsertConditions.Parameters.AddWithValue("@rfp_id", !idPriceRequest) |> ignore
+              cmdInsertConditions.Parameters.AddWithValue("@eis_conditions_payment", eis_conditions_payment) |> ignore
+              cmdInsertConditions.Parameters.AddWithValue("@eis_conditions_main", eis_conditions_main) |> ignore
+              cmdInsertConditions.Parameters.AddWithValue("@eis_conditions_contractGuarantee", eis_conditions_contractGuarantee) |> ignore
+              cmdInsertConditions.Parameters.AddWithValue("@eis_conditions_warranty", eis_conditions_warranty) |> ignore
+              cmdInsertConditions.Parameters.AddWithValue("@eis_conditions_delivery", eis_conditions_delivery) |> ignore
+              cmdInsertConditions.Parameters.AddWithValue("@eis_conditions_addInfo", eis_conditions_addInfo) |> ignore
+              cmdInsertConditions.ExecuteNonQuery() |> ignore
           ()
