@@ -93,6 +93,9 @@ type DocumentPriceRequest44() =
               let contactEMail  = GetStringFromJtoken __.item "responsibleInfo.contactEMail"
               let contactPhone = GetStringFromJtoken __.item "responsibleInfo.contactPhone"
               let addInfo = GetStringFromJtoken __.item "conditions.addInfo"
-              
+              let insertPriceRequest =
+                String.Format ("INSERT INTO {0}request_for_prices SET eis_id = @eis_id, docPublishDate = @docPublishDate, request_startDate = @request_startDate, request_endDate = @request_endDate, purchase_startDate = @purchase_startDate, purchase_endDate = @purchase_endDate, registryNum = @registryNum, versionNumber = versionNumber, eis_state = @eis_state, pubOrg_regNum = @pubOrg_regNum, pubOrg_consRegistryNum = @pubOrg_consRegistryNum, pubOrg_respRole = @pubOrg_respRole, href = @href, printForm_url = @printForm_url, requestObjectInfo = @requestObjectInfo, responsibleInfo_place = @responsibleInfo_place, contactPerson_FIO = @contactPerson_FIO, contactEMail = @contactEMail, contactPhone = @contactPhone, addInfo = @addInfo, cancel = @cancel", S.Settings.Pref)
+              let cmdInsertPR = new MySqlCommand(insertPriceRequest, con)
+              cmdInsertPR.Prepare()
               ()
           ()
