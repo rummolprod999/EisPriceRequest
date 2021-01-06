@@ -60,7 +60,7 @@ type ParserPriceRequest44(dir : string) =
             let arr = List<string * int>()
             for r in ret do
                   match (snd r) with
-                  | 0 -> Logging.Log.logger (sprintf "!!!archive size = 0 %s" <| fst r)
+                  | 0 | 22 -> Logging.Log.logger (sprintf "!!!archive is empty %s" <| fst r)
                   | _ -> let res = context.Archives.AsNoTracking() .Where(fun x -> x.Archive = (fst r) && (int x.SizeArch = (snd r) || int x.SizeArch = 0)) .Count()
                          if res = 0 then arr.Add(r)
                          ()
@@ -98,7 +98,7 @@ type ParserPriceRequest44(dir : string) =
             let arr = List<string * int>()
             for r in ret do
                   match (snd r) with
-                  | 0 -> Logging.Log.logger (sprintf "!!!archive size = 0 %s" <| fst r)
+                  | 0 | 22 -> Logging.Log.logger (sprintf "!!!archive is empty %s" <| fst r)
                   | _ -> let arr_prev = sprintf "prev_%s" (fst r)
                          let res = context.Archives.AsNoTracking() .Where(fun x -> arr_prev = (fst r) && (int x.SizeArch = (snd r) || int x.SizeArch = 0)) .Count()
                          if res = 0 then arr.Add(r)
@@ -151,7 +151,7 @@ type ParserPriceRequest44(dir : string) =
             let arr = List<string * int>()
             for r in ret do
                   match (snd r) with
-                  | 0 -> Logging.Log.logger (sprintf "!!!archive size = 0 %s" <| fst r)
+                  | 0 | 22 -> Logging.Log.logger (sprintf "!!!archive is empty %s" <| fst r)
                   | _ -> let arr_last = sprintf "last_%s" (fst r)
                          let res = context.Archives.AsNoTracking().Where(fun x -> x.Archive = arr_last && (int x.SizeArch = (snd r) || int x.SizeArch = 0)).Count()
                          if res = 0 then arr.Add(r)
