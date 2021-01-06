@@ -26,7 +26,7 @@ type DocumentPriceRequest44() =
       member __.WorkerMysql() =
           let eis_id = GetStringFromJtoken __.item "id"
           let registryNum = GetStringFromJtoken __.item "registryNum"
-          if registryNum = "" then failwith <| sprintf "id or registryNum not found %s" __.file.Name
+          if registryNum = "" then failwith <| sprintf "registryNum not found %s" __.file.Name
           let versionNumber = match __.item.SelectToken("versionNumber") with
                                 | null -> 1
                                 | x -> (int) x
@@ -94,7 +94,7 @@ type DocumentPriceRequest44() =
               let xml = __.GetXml(__.file.FullName)
               let idPriceRequest = ref 0
               let insertPriceRequest =
-                String.Format ("INSERT INTO {0}request_for_prices SET eis_id = @eis_id, docPublishDate = @docPublishDate, request_startDate = @request_startDate, request_endDate = @request_endDate, purchase_startDate = @purchase_startDate, purchase_endDate = @purchase_endDate, registryNum = @registryNum, versionNumber = versionNumber, eis_state = @eis_state, pubOrg_regNum = @pubOrg_regNum, pubOrg_consRegistryNum = @pubOrg_consRegistryNum, pubOrg_respRole = @pubOrg_respRole, href = @href, printForm_url = @printForm_url, requestObjectInfo = @requestObjectInfo, responsibleInfo_place = @responsibleInfo_place, contactPerson_FIO = @contactPerson_FIO, contactEMail = @contactEMail, contactPhone = @contactPhone, addInfo = @addInfo, cancel = @cancel, xml = @xml", S.Settings.Pref)
+                String.Format ("INSERT INTO {0}request_for_prices SET eis_id = @eis_id, docPublishDate = @docPublishDate, request_startDate = @request_startDate, request_endDate = @request_endDate, purchase_startDate = @purchase_startDate, purchase_endDate = @purchase_endDate, registryNum = @registryNum, versionNumber = @versionNumber, eis_state = @eis_state, pubOrg_regNum = @pubOrg_regNum, pubOrg_consRegistryNum = @pubOrg_consRegistryNum, pubOrg_respRole = @pubOrg_respRole, href = @href, printForm_url = @printForm_url, requestObjectInfo = @requestObjectInfo, responsibleInfo_place = @responsibleInfo_place, contactPerson_FIO = @contactPerson_FIO, contactEMail = @contactEMail, contactPhone = @contactPhone, addInfo = @addInfo, cancel = @cancel, xml = @xml", S.Settings.Pref)
               let cmdInsertPR = new MySqlCommand(insertPriceRequest, con)
               cmdInsertPR.Prepare()
               cmdInsertPR.Parameters.AddWithValue("@eis_id", eis_id) |> ignore
@@ -133,9 +133,9 @@ type DocumentPriceRequest44() =
                   let product_OKEI_code =  GetStringFromJtoken product "OKEI.code"
                   let product_OKEI_name =  GetStringFromJtoken product "OKEI.name"
                   let product_quantity = GetStringFromJtoken product "quantity"
-                  let product_quantity = match Decimal.TryParse(product_quantity.GetPriceFromString()) with
+                  (*let product_quantity = match Decimal.TryParse(product_quantity.GetPriceFromString()) with
                                           | (true, y) -> y
-                                          | _ -> 0m
+                                          | _ -> 0m*)
                   let products_identity = GetStringFromJtoken product "identity"
                   let insertProduct =
                     String.Format ("INSERT INTO {0}request_for_prices_objects SET rfp_id = @rfp_id, objectInfo = @objectInfo, product_OKPD2_code = @product_OKPD2_code, product_OKPD2_name = @product_OKPD2_name, product_name = @product_name, product_OKEI_code = @product_OKEI_code, product_OKEI_name = @product_OKEI_name, product_quantity = @product_quantity, products_identity = @products_identity", S.Settings.Pref)
@@ -166,7 +166,7 @@ type DocumentPriceRequest44() =
                   cmdInsertAttachment.Parameters.AddWithValue("@fileName", fileName) |> ignore
                   cmdInsertAttachment.Parameters.AddWithValue("@fileSize", fileSize) |> ignore
                   cmdInsertAttachment.Parameters.AddWithValue("@docDescription", docDescription) |> ignore
-                  cmdInsertAttachment.Parameters.AddWithValue("@hrefAtt", hrefAtt) |> ignore
+                  cmdInsertAttachment.Parameters.AddWithValue("@href", hrefAtt) |> ignore
                   cmdInsertAttachment.ExecuteNonQuery() |> ignore
                   ()
               let eis_conditions_payment  = GetStringFromJtoken __.item "conditions.payment"
