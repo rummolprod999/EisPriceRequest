@@ -2,9 +2,9 @@ namespace ParserFsharp
 open System
 open System.Globalization
 open System.Text.RegularExpressions
-open NewtonExt
+open RegexpExt
 
-module StringExt =
+module rec StringExt =
     type String with
 
         member this.Get1FromRegexp(regex : string) : string option =

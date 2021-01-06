@@ -1,19 +1,13 @@
 namespace ParserFsharp
 open System
+open System.Globalization
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
 open System.Text.RegularExpressions
 open System.Collections.Generic
+open StringExt
 
-module NewtonExt =
-
-    let (|RegexMatch1|_|) (pattern : string) (input : string) =
-        let result = Regex.Match(input, pattern)
-        if result.Success then
-            match (List.tail [ for g in result.Groups -> g.Value ]) with
-            | fst :: [] -> Some(fst)
-            | _ -> None
-        else None
+module rec NewtonExt =
 
     let inline GetStringFromJtoken (x : ^a) (s : string) =
             match (^a : (member SelectToken : string -> JToken) (x, s)) with
@@ -42,7 +36,11 @@ module NewtonExt =
             | r -> match JsonConvert.SerializeObject(r) with
                    | null -> ""
                    | t -> t.Trim('"')
-
+    
+    let inline GetExactDateTimeStringFromJtoken (x : ^a) (s : string) =
+        match GetDateTimeStringFromJtoken x s with
+        | "" -> DateTime.MinValue
+        | d -> d.DateFromStringRus("yyyy-MM-ddTHH:mm:sszzz")
 
     type JToken with
         member this.StDString (path : string) (err : string) =

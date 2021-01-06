@@ -26,7 +26,7 @@ type DocumentPriceRequest44() =
             
       
       member __.WorkerMysql() =
-          let id = GetStringFromJtoken __.item "id"
+          let eis_id = GetStringFromJtoken __.item "id"
           let registryNum = GetStringFromJtoken __.item "registryNum"
           if registryNum = "" then failwith <| sprintf "id or registryNum not found %s" __.file.Name
           let versionNumber = match __.item.SelectToken("versionNumber") with
@@ -47,7 +47,7 @@ type DocumentPriceRequest44() =
           else
               reader.Close()
               let mutable maxNum = 0
-              let selectMax = sprintf "SELECT IFNULL(MAX(version_number), 0) AS m FROM %srequest_for_prices WHERE registryNum = @registryNum" S.Settings.Pref
+              let selectMax = sprintf "SELECT IFNULL(MAX(versionNumber), 0) AS m FROM %srequest_for_prices WHERE registryNum = @registryNum" S.Settings.Pref
               let cmd1 : MySqlCommand = new MySqlCommand(selectMax, con)
               cmd1.Prepare()
               cmd1.Parameters.AddWithValue("@registryNum", registryNum) |> ignore
@@ -72,5 +72,27 @@ type DocumentPriceRequest44() =
                     commandBuilder.ConflictOption <- ConflictOption.OverwriteChanges
                     adapter.Update(dt) |> ignore
               else cancel <- 1
+              let docPublishDate = GetExactDateTimeStringFromJtoken __.item "docPublishDate"
+              let request_startDate = GetExactDateTimeStringFromJtoken __.item "procedureInfo.request.startDate"
+              let request_endDate  = GetExactDateTimeStringFromJtoken __.item "procedureInfo.request.endDate"
+              let purchase_startDate  = GetExactDateTimeStringFromJtoken __.item "procedureInfo.purchase.startDate"
+              let purchase_endDate   = GetExactDateTimeStringFromJtoken __.item "procedureInfo.purchase.endDate"
+              let eis_state = GetStringFromJtoken __.item "state"
+              let pubOrg_regNum = GetStringFromJtoken __.item "publishOrg.regNum"
+              let pubOrg_consRegistryNum = GetStringFromJtoken __.item "publishOrg.consRegistryNum"
+              let pubOrg_respRole = GetStringFromJtoken __.item "publishOrg.responsibleRole"
+              let href  = GetStringFromJtoken __.item "href"
+              let printForm_url = GetStringFromJtoken __.item "printForm.url"
+              let requestObjectInfo  = GetStringFromJtoken __.item "requestObjectInfo"
+              let responsibleInfo_place  = GetStringFromJtoken __.item "responsibleInfo.place"
+              let contactPerson_LastName  = GetStringFromJtoken __.item "responsibleInfo.contactPerson.lastName"
+              let contactPerson_FirstName = GetStringFromJtoken __.item "responsibleInfo.contactPerson.firstName"
+              let contactPerson_MiddleName = GetStringFromJtoken __.item "responsibleInfo.contactPerson.middleName"
+              let contactPerson_FIO = sprintf "%s %s %s" contactPerson_LastName contactPerson_FirstName contactPerson_MiddleName
+              let contactPerson_FIO = contactPerson_FIO.Trim()
+              let contactEMail  = GetStringFromJtoken __.item "responsibleInfo.contactEMail"
+              let contactPhone = GetStringFromJtoken __.item "responsibleInfo.contactPhone"
+              let addInfo = GetStringFromJtoken __.item "conditions.addInfo"
               
+              ()
           ()

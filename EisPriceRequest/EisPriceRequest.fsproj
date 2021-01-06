@@ -10,8 +10,9 @@
         <Compile Include="IParser.fs" />
         <Compile Include="IDocument.fs" />
         <Compile Include="Argument.fs" />
-        <Compile Include="ModuleNewtonExtensions.fs" />
+        <Compile Include="ModuleRegexpExtensions.fs" />
         <Compile Include="ModuleStringExtensions.fs" />
+        <Compile Include="ModuleNewtonExtensions.fs" />
         <Compile Include="ModuleEnvVariable.fs" />
         <Compile Include="RegionContext.fs" />
         <Compile Include="ArchivePriceRequest44Context.fs" />
