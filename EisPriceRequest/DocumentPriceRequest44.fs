@@ -94,7 +94,7 @@ type DocumentPriceRequest44() =
               let xml = __.GetXml(__.file.FullName)
               let idPriceRequest = ref 0
               let insertPriceRequest =
-                String.Format ("INSERT INTO {0}request_for_prices SET eis_id = @eis_id, docPublishDate = @docPublishDate, request_startDate = @request_startDate, request_endDate = @request_endDate, purchase_startDate = @purchase_startDate, purchase_endDate = @purchase_endDate, registryNum = @registryNum, versionNumber = @versionNumber, eis_state = @eis_state, pubOrg_regNum = @pubOrg_regNum, pubOrg_consRegistryNum = @pubOrg_consRegistryNum, pubOrg_respRole = @pubOrg_respRole, href = @href, printForm_url = @printForm_url, requestObjectInfo = @requestObjectInfo, responsibleInfo_place = @responsibleInfo_place, contactPerson_FIO = @contactPerson_FIO, contactEMail = @contactEMail, contactPhone = @contactPhone, addInfo = @addInfo, cancel = @cancel, xml = @xml", S.Settings.Pref)
+                String.Format ("INSERT INTO {0}request_for_prices SET eis_id = @eis_id, docPublishDate = @docPublishDate, request_startDate = @request_startDate, request_endDate = @request_endDate, purchase_startDate = @purchase_startDate, purchase_endDate = @purchase_endDate, registryNum = @registryNum, versionNumber = @versionNumber, eis_state = @eis_state, pubOrg_regNum = @pubOrg_regNum, pubOrg_consRegistryNum = @pubOrg_consRegistryNum, pubOrg_respRole = @pubOrg_respRole, href = @href, printForm_url = @printForm_url, requestObjectInfo = @requestObjectInfo, responsibleInfo_place = @responsibleInfo_place, contactPerson_FIO = @contactPerson_FIO, contactEMail = @contactEMail, contactPhone = @contactPhone, addInfo = @addInfo, cancel = @cancel, xml = @xml, id_region = @id_region", S.Settings.Pref)
               let cmdInsertPR = new MySqlCommand(insertPriceRequest, con)
               cmdInsertPR.Prepare()
               cmdInsertPR.Parameters.AddWithValue("@eis_id", eis_id) |> ignore
@@ -119,6 +119,7 @@ type DocumentPriceRequest44() =
               cmdInsertPR.Parameters.AddWithValue("@addInfo", addInfo) |> ignore
               cmdInsertPR.Parameters.AddWithValue("@cancel", cancel) |> ignore
               cmdInsertPR.Parameters.AddWithValue("@xml", xml) |> ignore
+              cmdInsertPR.Parameters.AddWithValue("@id_region", __.region.Id) |> ignore
               cmdInsertPR.ExecuteNonQuery() |> ignore
               idPriceRequest := int cmdInsertPR.LastInsertedId
               match updated with
